@@ -1,0 +1,361 @@
+#라이브러리 불러오기
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import folium
+import json
+
+# matplotlib 한글폰트 지정
+plt.rc('font',family='AppleGothic')
+plt.rc('axes', unicode_minus=False)
+
+#csv 파일 불러오기
+#https://data.seoul.go.kr/dataList/10077/S/2/datasetView.do
+df_seoul_people= pd.read_csv('상주(야간)주간인구_2020.csv')
+
+df_seoul_people.head()
+
+#서울시 상주인구만 추출
+# '자치구'와 '상주인구' 열만을 추출하여 새로운 데이터프레임 생성
+df_seoul_sangju = df_seoul_people[['자치구', '상주인구 (명)']]
+
+# 결과 확인
+df_seoul_sangju
+
+#서울시 상주인구 데이터프레임 형성
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+people_counts = [141316, 118450, 212043, 282193, 334190, 331973, 337150, 425639, 293755, 311839, 
+              504411, 456474, 304192, 354420, 431427, 555402, 392040, 224123, 360059, 377366, 479969, 
+              394955, 499028, 631722, 436710]
+
+data_seoul_p = dict(zip(districts, people_counts))
+
+df1 = pd.DataFrame(list(data.items()), columns=['구', '상주인구'])
+
+#서울시 상주(야간)인구 지도 시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m2 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_p,
+    columns=['구', '상주인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+).add_to(m2)
+
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                        color: black; line-height:40px;"><b>서울시 상주(야간)인구</b></div>
+             '''
+m2.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m2.save("서울시상주인구.html")  # HTML 파일로 저장
+
+m2
+
+
+#서울시 주간인구
+#주간인구는 해당 지역의 상주인구(야간인구)에 다른 지역에서 유입된 통근·통학인구(유입인구)를 더하고 다른 지역으로 유출된 통근·통학인구(유출인구)를 뺀 것이다.
+
+# '자치구'와 '주간인구' 열만을 추출하여 새로운 데이터프레임 생성
+df_seoul_jugan = df_seoul_people[['자치구', '주간인구 (명)']]
+
+# 결과 확인
+df_seoul_jugan
+
+#서울시 주간인구 데이터프레임 만들기
+
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+weekly_population = [345797, 380224, 265108, 317795, 301045, 349222, 309648, 398474, 243647, 251902, 
+                     434895, 353063, 320414, 428016, 354082, 538753, 405702, 288203, 514216, 334439, 
+                     384244, 553702, 961600, 634489, 376133]
+
+data_seoul_w = dict(zip(districts, weekly_population))
+
+df2 = pd.DataFrame(list(data.items()), columns=['구', '주간인구'])
+
+#서울시 주간인구 지도 시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m3 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_w,
+    columns=['구', '주간인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+).add_to(m3)
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>서울시 주간인구</b></div>
+             '''
+m3.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m3.save("서울시주간인구.html")  # HTML 파일로 저장
+
+m3
+
+
+#서울시 생활인구 csv 파일 불러오기
+#https://data.seoul.go.kr/dataList/OA-15379/S/1/datasetView.do
+df_seoul_yudong= pd.read_csv('서울시 자치구단위 생활인구_2024_1_17.csv')
+
+df_seoul_yudong.head()
+
+#총생활인구 데이터프레임 만들기
+
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+daily_population = [318247, 354716, 304379, 364963, 377350, 364022, 345140, 422138, 278204, 260864, 482092, 426210, 
+                     399796, 483648, 372405, 565519, 425194, 250268, 550111, 379476, 477312, 622327, 930881, 776019,
+                     515485]
+
+data_seoul_d = dict(zip(districts, daily_population))
+
+df2 = pd.DataFrame(list(data.items()), columns=['구', '총생활인구'])
+
+#서울시 총생활인구 지도시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m4 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_d,
+    columns=['구', '총생활인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+).add_to(m4)
+
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>서울시 총생활인구</b></div>
+             '''
+m4.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m4.save("서울시총생활인구.html")  # HTML 파일로 저장
+
+
+m4
+
+#서울시 일최대인구 데이터프레임 만들기
+
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+daily_max = [432613, 508816, 337284, 386983, 399410, 380174, 387230, 457253, 306284, 289387, 527730,
+                    483335, 431844, 526594, 401719, 585278, 438080, 279438, 634395, 413999, 538810, 769810,
+                    1201173, 791002, 558082]
+
+data_seoul_m = dict(zip(districts, daily_max))
+
+df2 = pd.DataFrame(list(data.items()), columns=['구', '일최대인구'])
+
+#서울시 일최대인구 지도시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m5 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_m,
+    columns=['구', '일최대인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    highlight=True,
+    legend_name='일 최대인구'
+).add_to(m5)
+
+folium.LayerControl().add_to(m5)
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>서울시 일 최대인구</b></div>
+             '''
+m5.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m5.save("서울시일최대인구.html")  # HTML 파일로 저장
+
+m5
+
+#서울시 일최소인구 데이터프레임 만들기
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+daily_min = [224599, 226932, 270833, 337601, 347468, 346764, 299320, 385007, 248576, 231913, 435420,
+             362743, 375002, 444992, 336964, 551884, 411403, 225824, 473375, 339076, 411737, 482897,
+             698551, 755312, 470401]
+
+data_seoul_mn = dict(zip(districts, daily_min))
+
+df2 = pd.DataFrame(list(data.items()), columns=['구', '일최소인구'])
+
+
+#서울시 일최소인구 지도시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m6 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_mn,
+    columns=['구', '일최소인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    highlight=True,
+    legend_name='일 최소인구'
+).add_to(m6)
+
+folium.LayerControl().add_to(m6)
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>서울시 일 최소인구</b></div>
+             '''
+m6.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m6.save("서울시일최소인구.html")  # HTML 파일로 저장
+
+m6
+
+
+#서울시 일최대이동인구 데이터프레임 만들기
+districts = ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구",
+             "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구",
+             "관악구", "서초구", "강남구", "송파구", "강동구"]
+
+daily_move = [271211, 339768, 183415, 208784, 163716, 177149, 138596, 170729, 161350, 111735, 184794, 153346,
+             233166, 283502, 144662, 252181, 197136, 154569, 366551, 146266, 178992, 450231, 720091, 379218,
+             224464]
+
+data_seoul_move = dict(zip(districts, daily_move))
+
+df2 = pd.DataFrame(list(data.items()), columns=['구', '일최대이동인구'])
+
+
+#서울시 일최대이동인구 지도시각화
+geo_json = 'https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json'
+
+m7 = folium.Map(
+    location=[37.566345, 126.977893], zoom_start=10.5
+)
+
+folium.Choropleth(
+    geo_data=geo_json,
+    name='choropleth',
+    data=data_seoul_move,
+    columns=['구', '일최대이동인구'],
+    key_on='feature.properties.name',
+    fill_color='OrRd',
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    highlight=True,
+    legend_name='일 최대이동인구'
+).add_to(m7)
+
+folium.LayerControl().add_to(m7)
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed; 
+                         top: 10px; left: 10px; width: 200px; height: 40px; 
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>서울시 일 최대 이동인구</b></div>
+             '''
+m7.get_root().html.add_child(folium.Element(title_html))
+
+# 이미지로 저장
+# m7.save("서울시일최대이동인구.html")  # HTML 파일로 저장
+
+m7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
