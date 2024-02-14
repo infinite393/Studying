@@ -1,0 +1,82 @@
+#라이브러리 임포트
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import folium
+import json
+
+# matplotlib 한글폰트 지정
+plt.rc('font',family='AppleGothic')
+plt.rc('axes', unicode_minus=False)
+
+#중랑구 헬스장 좌표 csv 파일 불러오기
+df_location = pd.read_csv('중랑구_헬스장좌표.csv')
+df_location
+
+#중랑구 헬스장 좌표 circle마커로 표시하기
+# 지도 중심 잡기 (중랑구)
+loc = (37.606324, 127.092584)
+
+m8 = folium.Map(location=loc
+               , zoom_start=13.5
+              )
+
+# circle마커 생성 (tooltip :사업장명)
+marker_list = []
+for i in range(len(df_location)):
+    marker = folium.Circle((df_location.iloc[i,1], df_location.iloc[i,2])
+                           , tooltip=df_location.iloc[i,0]
+                          , radius = 30
+                          , color='red'
+                          , fill=True)
+    marker.add_to(m8)
+
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed;
+                         top: 10px; left: 10px; width: 200px; height: 40px;
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>중랑구 헬스장 개별위치</b></div>
+             '''
+m8.get_root().html.add_child(folium.Element(title_html))
+
+m8
+
+
+
+#중랑구 헬스장 좌표 마크클러스터로 표현하기
+loc = (37.606324, 127.092584)
+
+m9 = folium.Map(location=loc
+               , zoom_start=14
+              )
+
+#마커 클러스터 생성
+
+from folium.plugins import MarkerCluster
+marker_cluster = MarkerCluster().add_to(m9)
+
+
+for i in range(len(df_location)):
+    center_name = df_location.iloc[i,0]
+    lat = df_location.iloc[i,1]
+    lon = df_location.iloc[i,2]
+    folium.Marker(location = (lat, lon)
+                 , tooltip=center_name).add_to(marker_cluster)
+
+
+# 네모 박스로 제목 추가 (스타일 및 좌측 상단 정렬 변경)
+title_html = '''
+             <div style="position: fixed;
+                         top: 10px; left: 10px; width: 200px; height: 40px;
+                         border:2px solid #555; z-index:9999; font-size:16px;
+                         background-color:white; text-align:center;
+                         color: black; line-height:40px;"><b>중랑구 헬스장 동별 현황</b></div>
+             '''
+m9.get_root().html.add_child(folium.Element(title_html))
+
+
+m9
