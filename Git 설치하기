@@ -1,0 +1,17 @@
+1. Git 공식 사이트로 이동 https://git-scm.com/download
+2. 운영체제 선택 - macOS
+3. homebrew 설치 - Install homebrew if you don't already have it, then: 에서 homebrew 클릭
+4. 터미널에 제공된 코드 입력 - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+5. Next Steps: 가 뜨면 ( ) 괄호 안에 제공된 코드를 하나씩 터미널에 입력하면 됨
+6. dquote> 에 " 입력후 return(enter)로 탈출
+7. brew --version 으로 설치 완료 확인
+8. git 설치 - brew install git
+9. git --version
+10. git config --global init.dfaultBranch main (깃의 기본 브랜치 이름을 main으로 설정하기 위한 작업)
+끝
+
+
+
+
+
+
