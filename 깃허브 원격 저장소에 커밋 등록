@@ -1,0 +1,29 @@
+<VScode에서 생성한 파일을 터미널 명령을 실행해서 github에 등록하기>
+[terminal] cd 작업 폴더명 -> 작업폴더로 이동(chapter1-basic)
+[terminal] git config user.name "init393"
+[terminal] git config user.email "skfo3219@gmail.com" --> git config 명력어로 깃 지역 저장소에 사용자 등록
+VScode 탐색기에서 README.md 생성->내용 입력 후 저장
+[terminal] git add README.md 커밋에 포함될 파일로 등록하기
+[terminal] git commit -m "저장소 설명 추가" 새로운 커밋 생성
+[terminal] git log 커밋이 잘 생성됐는지 확인
+깃허브 페이지에서 New Repository를 선택해 원격 저장소 생성 페이지로 이동
+저장소 이름/설명 기입 후 생성
+[terminal] git remote add origin 원격 저장소 주소
+[terminal] git push origin main
+=> 깃허브 인증방식 변경으로 이메일과 비밀번호 입력하라는 창이 나옴
+=> 프로필 settings 클릭해서 토큰 생성
+=> 나같은 경우는 모든 체크 박스 선택 후 생성함 (책에서 VScode로 실습하기 위해서는 repo 와 workfolw만 선택하면 되는듯?)
+토믄 생성 후 터미널창에서 비밀번호 표시가 뜨면 복사 붙여넣기 하면 됨
+ * [new branch]      main -> main 가 뜨면 성공
+
+
+
+
+
+
+
+
+
+
+
+
