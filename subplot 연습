@@ -1,0 +1,42 @@
+import matplotlib.pyplot as plt
+
+# 서브플롯에 배치할 그래프들
+fig, axs = plt.subplots(2, 2, figsize=(16, 12))
+
+# 첫 번째 그래프: 중랑구 동별 인구 수
+axs[0, 0].bar(df_junrangu_dong['동'], df_junrangu_dong['인구 (명)'], color=colors)
+axs[0, 0].set_title('중랑구 동별 인구 수')
+axs[0, 0].set_xlabel('동')
+axs[0, 0].set_ylabel('인구 (명)')
+axs[0, 0].tick_params(axis='x', rotation=45)
+
+# 두 번째 그래프: 중랑구 동별 인구밀도
+axs[0, 1].bar(df_junrangu_dong['동'], df_junrangu_dong['인구밀도 (명/㎢)'], color=colors)
+axs[0, 1].set_title('중랑구 동별 인구밀도')
+axs[0, 1].set_xlabel('동')
+axs[0, 1].set_ylabel('인구밀도 (명/㎢)')
+axs[0, 1].tick_params(axis='x', rotation=45)
+
+# 세 번째 그래프: 중랑구 주간 유동인구 추이
+axs[1, 0].plot(df_seoul_jr['기준일ID'], df_seoul_jr['일최대이동인구수'], marker='o', label='일최대이동인구수')
+axs[1, 0].set_title('중랑구 주간 유동인구 추이 (2024년)')
+axs[1, 0].set_xlabel('날짜')
+axs[1, 0].set_ylabel('일최대이동인구수')
+axs[1, 0].tick_params(axis='x', rotation=45)
+axs[1, 0].legend()
+
+# 네 번째 그래프: 서울시 지역별 임대료 비교
+axs[1, 1].bar(regions, prices, color=['blue', 'green', 'orange'])
+axs[1, 1].set_title('서울시 지역별 임대료 비교 (2023년 03분기)')
+axs[1, 1].set_xlabel('지역')
+axs[1, 1].set_ylabel('임대료 (만원)')
+axs[1, 1].tick_params(axis='x', rotation=45)
+
+# 그래프 간 간격 조정
+plt.tight_layout()
+
+# 이미지로 저장
+plt.savefig('/Users/icda/pythondata/images/combined_plots.png')
+
+# 그래프 표시
+plt.show()
