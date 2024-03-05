@@ -1,0 +1,184 @@
+#라이브러리 불러오기
+import FinanceDataReader as fdr
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 그래프 스타일 지정
+# plt.style.use('ggplot')
+
+# matplotlib 한글폰트 지정
+plt.rc('font',family='AppleGothic')
+plt.rc('axes', unicode_minus=False)
+
+#AMZN 주가 1년간 동향
+import pandas as pd
+import matplotlib.pyplot as plt
+import FinanceDataReader as fdr
+
+# AMZ(Amazon)의 주가 데이터 가져오기
+amz_stock = fdr.DataReader('AMZN', '2023-01-01', '2024-01-01')
+
+# 주가 데이터 시각화
+plt.figure(figsize=(10, 6))
+plt.plot(amz_stock['Close'], label='AMZN 주가')
+plt.title('AMZN 주가 1년간 동향')
+plt.xlabel('날짜')
+plt.ylabel('주가')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+#AMZN 재무상태
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# AMZ(Amazon)의 재무 데이터 가져오기
+amz_info = yf.Ticker('AMZN')
+amz_financials = amz_info.quarterly_financials.T
+
+# 전체 재무 데이터 확인
+print(amz_financials)
+
+# 필요한 재무 지표 선택
+selected_metrics = ['Total Revenue', 'Net Income']
+
+# 재무 데이터 시각화
+plt.figure(figsize=(10, 6))
+for metric in selected_metrics:
+    plt.plot(amz_financials.index, amz_financials[metric], label=metric)
+
+plt.title('AMZN 재무 상태')
+plt.xlabel('분기')
+plt.ylabel('금액 (단위: 억 달러)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+#AMZN 1개월 주식 거래량
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# AMZN(Amazon)의 주식 데이터 가져오기
+amzn_stock = yf.Ticker('AMZN')
+
+# 최근 1달 간의 주식 데이터 가져오기
+amzn_data = amzn_stock.history(period='1mo')
+
+# 주식 거래량 차트 시각화
+plt.figure(figsize=(10, 6))
+amzn_data['Volume'].plot(kind='bar', color='blue', alpha=0.7)
+plt.title('AMZN 주식 거래량 (1개월)')
+plt.xlabel('날짜')
+plt.ylabel('거래량')
+plt.grid(axis='y')
+plt.show()
+
+
+#시가총액 상위10개기업
+#나스닥
+nasdaq = fdr.StockListing('NASDAQ')
+nasdaq['Indexes'] = 'NASDAQ'
+print('나스닥:',nasdaq.shape)
+
+#뉴욕증권거래소
+nyse = fdr.StockListing('NYSE')
+nyse['Indexes'] = 'NYSE'
+print('뉴욕증권거래소:',nyse.shape)
+
+#아맥스
+amax = fdr.StockListing('AMEX')
+amax['Indexes'] = 'AMEX'
+print('아멕스:',amax.shape)
+
+#데이터 합치기
+df = pd.concat([nasdaq,nyse,amax])
+
+#Symbol이 중복되는 데이터 제거
+df = df.drop_duplicates('Symbol')
+
+#데이터 shape 확인
+print(df.shape)
+
+# '백화점'인 경우를 '온라인 소매업'으로 변경
+df['Industry'] = df['Industry'].replace('백화점', '온라인 소매업')
+
+# 변경된 데이터 확인
+df
+
+#중복 데이터 제거 GOOG(=GOOGL)
+nasdaq = nasdaq[nasdaq['Symbol'] != 'GOOG']
+nasdaq.head(10)
+
+#시가총액 상위 10개기업 막대그래프 시각화
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 주어진 시가총액 데이터
+market_caps = {
+    'AAPL': 3010,
+    'MSFT': 2990,
+    'AMZN': 1620,
+    'NVDA': 1520,
+    'GOOGL': 1870,
+    'META': 1000,
+    'ASML': 305.498,
+    'TSLA': 651.229,
+    'AVGO': 586.987,
+    'COST': 304.624
+}
+
+# 시가총액 기준으로 내림차순 정렬
+sorted_market_caps = dict(sorted(market_caps.items(), key=lambda item: item[1], reverse=True))
+
+# 다양한 색상을 사용하기 위해 seaborn의 color_palette 활용
+colors = sns.color_palette('husl', n_colors=len(sorted_market_caps))
+
+# 그래프 그리기
+plt.figure(figsize=(10, 6))
+plt.barh(list(sorted_market_caps.keys()), list(sorted_market_caps.values()), color=colors)
+plt.title('시가총액 상위 10개 기업')
+plt.xlabel('시가총액 (조 USD)')
+plt.ylabel('기업')
+plt.show()
+
+#아마존주식 일일 수익률 추이
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# 아마존 주식 데이터 다운로드
+amazon_data = yf.download("AMZN", start="2021-01-01", end="2024-01-01")
+
+# 수익률 계산
+amazon_data['Daily_Return'] = amazon_data['Adj Close'].pct_change()
+
+# 수익률 추이 차트 그리기
+plt.figure(figsize=(12, 6))
+plt.plot(amazon_data.index, amazon_data['Daily_Return'], label='Daily Return', color='orange')
+plt.title('아마존 주식 일일 수익률 추이')
+plt.xlabel('Date')
+plt.ylabel('일일 수익률')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+#월마트주식 일일 수익률 추이
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# 아마존 주식 데이터 다운로드
+amazon_data = yf.download("WMT", start="2021-01-01", end="2024-01-01")
+
+# 수익률 계산
+amazon_data['Daily_Return'] = amazon_data['Adj Close'].pct_change()
+
+# 수익률 추이 차트 그리기
+plt.figure(figsize=(12, 6))
+plt.plot(amazon_data.index, amazon_data['Daily_Return'], label='Daily Return', color='green')
+plt.title('월마트 주식 일일 수익률 추이')
+plt.xlabel('Date')
+plt.ylabel('일일 수익률')
+plt.legend()
+plt.grid(True)
+plt.show()
