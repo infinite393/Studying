@@ -1,0 +1,29 @@
+목적: 컴퓨터 판매 쇼핑몰 사이트의 주문수 추세를 분석한 판매량 개선
+#### step1. csv 파일 불러오기
+* cm = customer_master
+* im = item_master
+* t_1 = transaction_1
+* td_1 = transaction_detail_1
+
+#### step2. 데이터결합(유니언=행방향으로 결합=세로로 결합)
+* transaction_1과 transaction_2, transaction_detail_1과 transaction_detail_2 결합
+
+결합: df = pd.concat([결합할df1,결합할df2], ignore=True)
+
+#데이터 개수를 확인해서 유니언 검증
+print(len(t_1))
+print(len(t_2))
+print(len(transaction))
+
+#### step3. 매출 데이터끼리 결합(조인)
+* 기준이 되는 데이터 결정
+* 조인할 칼럼 걸정
+* 추가할 데이터
+    * transaction의 'payment_date, customer_id'
+    * price는 한 번 구매할 때의 합계 금액 => transaction_detail의 quantity와 item_master의 item_price로 계산됨(추가x)
+    * ㄴtransaction_detail에 상세 정보가 많아 추가하면 중복 계산
+* 공통 데이터 칼럼
+    * transaction_id
+
+조인 join_data = pd.merge(transaction_detail, transaction[["transaction_id", "payment_date", "customer_id"]], 
+                     on="transaction_id", how="left")
