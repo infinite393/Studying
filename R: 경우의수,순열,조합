@@ -1,0 +1,43 @@
+팩토리얼 함수 만들기
+fact <- function(n){
+  x <- 1
+  for (i in 2:n) {
+    x <- x * i 
+    }
+  return(x)
+  }
+fact(5)
+
+R로 순열 구하기
+x <- c(1,2,3,4,5)
+count <- 0
+for (i in 1:5) {
+  x2 <- x[x != i]
+  for(j in 1:4) {
+    print(c(i, x2[j]))
+          count <- count + 1
+  }
+}
+print(count)
+
+perm <- function(n,r) {
+  return(fact(n) / fact(n-r))
+}
+
+perm(5,2)
+
+R로 조합계산하기
+x <- c(1,2,3,4,5)
+count <- 0
+for (i in 1:4) {
+  for(j in (i+1):5) {
+    print(c(i,j))
+    count <- count +1
+  }
+}
+print(count)
+
+comb <- function(n, r) {
+  return(fact(n) / fact(n-r) / fact(r))
+}
+comb(45,6) #45개의 숫자 중 순서에 상관없이 여섯 개를 고르는 경우의 수
