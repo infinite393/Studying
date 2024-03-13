@@ -41,3 +41,5 @@ comb <- function(n, r) {
   return(fact(n) / fact(n-r) / fact(r))
 }
 comb(45,6) #45개의 숫자 중 순서에 상관없이 여섯 개를 고르는 경우의 수
+
+출처 <3일만에 끝내는 코딩+통계>
